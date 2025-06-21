@@ -65,7 +65,7 @@ FundMate/
 ### 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/yourusername/FundMate.git
+git clone https://github.com/Amar-H-G/FundMate.git
 cd FundMate
 ```
 
