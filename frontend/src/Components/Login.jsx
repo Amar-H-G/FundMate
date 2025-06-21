@@ -2,8 +2,12 @@ import { FaUser, FaLock, FaArrowRight, FaChartLine } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useAuth } from "../Context/AuthContext";
 
 const Login = ({ onToggleAuth }) => {
+  const { setToken, setIsAuthenticated } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -15,9 +19,37 @@ const Login = ({ onToggleAuth }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Logging in with:", formData);
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_FUNDMATE_BACKEND_URI}/api/user/login`,
+        formData
+      );
+      const token = res.data.token;
+
+      if (token) {
+        // Set token in localStorage and context
+        localStorage.setItem("userToken", token);
+        setToken(token);
+        setIsAuthenticated(true);
+
+        toast.success("Login successful!", {
+          position: "top-center",
+          autoClose: 2000,
+        });
+
+        setTimeout(() => navigate("/home"), 2000);
+      } else {
+        toast.error("No token received. Please try again.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        error.response?.data?.message || "Login failed. Please try again.",
+        { position: "top-center" }
+      );
+    }
   };
 
   const handleSignupRedirect = () => {
@@ -36,7 +68,6 @@ const Login = ({ onToggleAuth }) => {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6 }}
       >
-        {/* Header Section */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-500 p-6 text-white text-center">
           <motion.div
             className="flex items-center justify-center mb-3"
@@ -47,7 +78,7 @@ const Login = ({ onToggleAuth }) => {
             <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mr-3">
               <FaChartLine className="text-white text-lg" />
             </div>
-            <h1 className="text-2xl font-bold">FundTrack Pro</h1>
+            <h1 className="text-2xl font-bold">Fundmate</h1>
           </motion.div>
           <motion.p
             className="text-blue-100 text-sm"

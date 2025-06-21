@@ -94,12 +94,6 @@ const Footer = () => {
                 <FaGlobe size={20} />
               </a>
             </div>
-            <div className="mt-6">
-              <button className="flex items-center space-x-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
-                <FaUser />
-                <span>Your Profile</span>
-              </button>
-            </div>
           </div>
         </div>
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">

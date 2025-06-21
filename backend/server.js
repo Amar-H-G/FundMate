@@ -4,10 +4,12 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db.js");
 const routes = require("./routers/mainRoutes.js");
 const { errorHandler } = require("./middlewares/errorMiddleware.js");
+const cors = require("cors");
 
 dotenv.config();
 
 const app = express();
+app.use(cors());
 
 app.use(express.json());
 

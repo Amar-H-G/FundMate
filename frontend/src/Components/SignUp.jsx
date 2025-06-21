@@ -9,12 +9,14 @@ import {
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const SignUp = ({ onToggleAuth }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "",
+    phone: "", // ✅ added phone
     password: "",
   });
   const navigate = useNavigate();
@@ -24,9 +26,37 @@ const SignUp = ({ onToggleAuth }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Signing up with:", formData);
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_FUNDMATE_BACKEND_URI}/api/user/register`,
+        formData
+      );
+
+      localStorage.setItem("userToken", token);
+      setToken(token);
+      setIsAuthenticated(true);
+
+      // your backend may not return `success: true`, so just check if res.status is 201
+      if (res.status === 201) {
+        toast.success("Signup successful!", {
+          position: "top-center",
+          autoClose: 2000,
+        });
+        setTimeout(() => navigate("/signin"), 2000);
+      } else {
+        toast.error(res.data.message || "Signup failed. Try again.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        error.response?.data?.message ||
+          "Something went wrong. Please try again.",
+        { position: "top-center" }
+      );
+    }
   };
 
   const handleLoginRedirect = () => {
@@ -56,7 +86,7 @@ const SignUp = ({ onToggleAuth }) => {
             <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mr-3">
               <FaChartLine className="text-white text-lg" />
             </div>
-            <h1 className="text-2xl font-bold">FundTrack Pro</h1>
+            <h1 className="text-2xl font-bold">Fundmate</h1>
           </motion.div>
           <motion.p
             className="text-blue-100 text-sm"
@@ -77,6 +107,7 @@ const SignUp = ({ onToggleAuth }) => {
             transition={{ delay: 0.8 }}
             onSubmit={handleSubmit}
           >
+            {/* Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Full Name
@@ -97,6 +128,7 @@ const SignUp = ({ onToggleAuth }) => {
               </div>
             </div>
 
+            {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Email
@@ -117,6 +149,7 @@ const SignUp = ({ onToggleAuth }) => {
               </div>
             </div>
 
+            {/* ✅ Phone */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Phone Number
@@ -131,15 +164,16 @@ const SignUp = ({ onToggleAuth }) => {
                   value={formData.phone}
                   onChange={handleChange}
                   className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-md"
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="+91 98765 43210"
                   required
                 />
               </div>
             </div>
 
+            {/* Password */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Password
+                Password{" "}
                 <span className="text-xs text-gray-500 ml-1">
                   (min 8 characters)
                 </span>

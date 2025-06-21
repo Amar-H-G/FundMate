@@ -1,8 +1,8 @@
 import { useState } from "react";
 // import { useAuth } from "../context/AuthContext";
 import axios from "axios";
-import LoadingSpinner from "../components/LoadingSpinner";
-import FundCard from "../components/FundCard";
+import LoadingSpinner from "../Components/LoadingSpinner";
+import FundCard from "../Cmponents/FundCard";
 
 const SearchPage = () => {
   const [query, setQuery] = useState("");

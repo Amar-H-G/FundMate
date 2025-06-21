@@ -1,3 +1,6 @@
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/AuthContext";
+import Login from "./Login";
 import {
   FaArrowRight,
   FaChartLine,
@@ -7,16 +10,25 @@ import {
 import { motion } from "framer-motion";
 
 const PreLoginHome = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleGetStarted = () => {
+    if (user) {
+      navigate("/home");
+    } else {
+      navigate("/signin");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center p-4 sm:p-6">
-      {/* Main Container */}
       <motion.div
         className="w-full max-w-6xl"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
       >
-        {/* Responsive Card */}
         <motion.div
           className="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden border border-white/20"
           initial={{ y: 40, scale: 0.98 }}
@@ -27,9 +39,7 @@ const PreLoginHome = () => {
             damping: 20,
           }}
         >
-          {/* Grid changes to column on mobile */}
           <div className="grid lg:grid-cols-2">
-            {/* Left Content - Same on all devices */}
             <div className="p-6 sm:p-8 md:p-12 lg:p-16 flex flex-col justify-center">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -83,7 +93,10 @@ const PreLoginHome = () => {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.8 }}
                 >
-                  <button className="flex items-center justify-center px-6 sm:px-8 py-2.5 sm:py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-lg transition-all transform hover:-translate-y-0.5 text-sm sm:text-base">
+                  <button
+                    onClick={handleGetStarted}
+                    className="flex items-center justify-center px-6 sm:px-8 py-2.5 sm:py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-lg transition-all transform hover:-translate-y-0.5 text-sm sm:text-base"
+                  >
                     <span>Get Started</span>
                     <FaArrowRight className="ml-1 sm:ml-2" />
                   </button>

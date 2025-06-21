@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 // import { useAuth } from "../Context/AuthContext";
-import LoadingSpinner from "../components/LoadingSpinner";
+import LoadingSpinner from "../Components/LoadingSpinner";
 
 const FundDetail = () => {
   const { schemeCode } = useParams();

@@ -1,82 +1,38 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
-import jwt_decode from "jwt-decode"; // ✅ Correct default import
-
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [token, setToken] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // Set user and axios headers if token exists
   useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwt_decode(token); // ✅ Use default-imported function
-        setUser(decoded);
-        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      } catch (err) {
-        console.error("Invalid token");
-        logout(); // fallback if token is invalid
-      }
-    } else {
-      setUser(null);
-      delete axios.defaults.headers.common["Authorization"];
+    const storedToken = localStorage.getItem("userToken");
+    if (storedToken) {
+      setToken(storedToken);
+      setIsAuthenticated(true);
     }
     setLoading(false);
-  }, [token]);
+  }, []);
 
-  // Login function
-  const login = async (email, password) => {
-    try {
-      const res = await axios.post("/api/auth/login", { email, password });
-      const newToken = res.data.token;
-      localStorage.setItem("token", newToken);
-      setToken(newToken);
-      return { success: true };
-    } catch (error) {
-      return {
-        success: false,
-        message: error.response?.data?.message || "Login failed",
-      };
-    }
-  };
-
-  // Register function
-  const register = async (userData) => {
-    try {
-      const res = await axios.post("/api/auth/register", userData);
-      const newToken = res.data.token;
-      localStorage.setItem("token", newToken);
-      setToken(newToken);
-      return { success: true };
-    } catch (error) {
-      return {
-        success: false,
-        message: error.response?.data?.message || "Registration failed",
-      };
-    }
-  };
-
-  // Logout function
   const logout = () => {
-    localStorage.removeItem("token");
-    delete axios.defaults.headers.common["Authorization"];
-    setUser(null);
     setToken(null);
+    setIsAuthenticated(false);
+    localStorage.removeItem("userToken");
+    navigate("/");
   };
 
   return (
     <AuthContext.Provider
       value={{
-        user,
         token,
-        loading,
-        login,
-        register,
+        setToken,
+        isAuthenticated,
+        setIsAuthenticated,
         logout,
-        isAuthenticated: !!user,
+        loading,
       }}
     >
       {children}
@@ -84,5 +40,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use auth context
 export const useAuth = () => useContext(AuthContext);
