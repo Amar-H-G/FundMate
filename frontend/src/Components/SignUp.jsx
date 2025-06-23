@@ -11,15 +11,17 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useAuth } from "../Context/AuthContext"; // Import useAuth hook
 
 const SignUp = ({ onToggleAuth }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "", // ✅ added phone
+    phone: "",
     password: "",
   });
   const navigate = useNavigate();
+  const { setToken, setIsAuthenticated } = useAuth(); // Add this line
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,20 +37,18 @@ const SignUp = ({ onToggleAuth }) => {
         formData
       );
 
-      localStorage.setItem("userToken", token);
-      setToken(token);
-      setIsAuthenticated(true);
+      // Destructure token from the response data
+      const { token } = res.data;
 
-      // your backend may not return `success: true`, so just check if res.status is 201
-      if (res.status === 201) {
-        toast.success("Signup successful!", {
-          position: "top-center",
-          autoClose: 2000,
-        });
-        setTimeout(() => navigate("/signin"), 2000);
-      } else {
-        toast.error(res.data.message || "Signup failed. Try again.");
-      }
+      // localStorage.setItem("userToken", token);
+      // setToken(token);
+      // setIsAuthenticated(true);
+
+      toast.success("Signup successful!", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+      setTimeout(() => navigate("/signin"), 2000); // Redirect to home or dashboard
     } catch (error) {
       console.error(error);
       toast.error(
